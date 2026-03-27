@@ -557,28 +557,17 @@ def generate_questions_logic(grade, main_t, sub_t, num_q, is_challenge=False):
                 divisor = random.randint(2, 9)
                 quotient = random.randint(5, 12) if actual_sub_t == "การหารพื้นฐาน" else random.randint(20, 999)
                 dividend = divisor * quotient
+                
+                eq_html = f"<div style='font-size: 24px; margin-bottom: 10px;'><b>{dividend:,} ÷ {divisor} = ?</b></div>"
+                table_html = generate_long_division_step_by_step_html(divisor, dividend, eq_html, is_key=False)
+                table_key = generate_long_division_step_by_step_html(divisor, dividend, eq_html, is_key=True)
+                
                 if actual_sub_t == "การหารยาว":
-                    eq_html = f"<div style='font-size: 24px; margin-bottom: 10px;'><b>{dividend:,} ÷ {divisor} = ?</b></div>"
-                    q = f"จงหาผลหารโดยวิธีหารยาว<br>{generate_long_division_step_by_step_html(divisor, dividend, eq_html, is_key=False)}"
-                    sol = f"<span style='color:#2c3e50;'>{generate_long_division_step_by_step_html(divisor, dividend, eq_html, is_key=True)}<br><b>ตอบ: {quotient:,}</b></span>"
+                    q = f"จงหาผลหารโดยวิธีหารยาว<br>{table_html}"
                 else:
-                    q = f"จงหาผลหารของ <b>{dividend:,} ÷ {divisor} = ?</b>"
-                    sol = f"<span style='color:#2c3e50;'><b>ตอบ: {quotient:,}</b></span>"
-
-            elif actual_sub_t in ["การอ่านและเขียนเศษส่วน", "การบวกลบเศษส่วน (ตัวส่วนเท่ากัน)"]:
-                if actual_sub_t == "การอ่านและเขียนเศษส่วน":
-                    d = random.randint(3, 10)
-                    n = random.randint(1, d-1)
-                    q = f"รูปภาพที่แรเงา <b>{n}</b> ส่วน จากทั้งหมด <b>{d}</b> ส่วนที่เท่าๆ กัน เขียนเป็นเศษส่วนได้อย่างไร?"
-                    sol = f"<span style='color:#2c3e50;'><b>ตอบ: เศษ {n} ส่วน {d}</b> ({f_html(n, d)})</span>"
-                else:
-                    d = random.randint(4, 12)
-                    op = random.choice(["+", "-"])
-                    if op == "+": n1, n2 = random.randint(1, d//2), random.randint(1, d//2 - 1 if d//2 > 1 else 1)
-                    else: n1, n2 = random.randint(d//2, d-1), random.randint(1, d//2 - 1)
-                    ans_n = n1 + n2 if op == "+" else n1 - n2
-                    q = f"จงหาผลลัพธ์ของ <b>{f_html(n1, d)} {op} {f_html(n2, d)}</b>"
-                    sol = f"<span style='color:#2c3e50;'><b>ตอบ: {f_html(ans_n, d)}</b></span>"
+                    q = f"จงหาผลหารต่อไปนี้ พร้อมทั้งแสดงวิธีทำแบบตั้งหารยาว<br>{table_html}"
+                    
+                sol = f"<span style='color:#2c3e50;'>{table_key}<br><b>ตอบ: {quotient:,}</b></span>"
 
             else:
                 # ป้องกัน Error กรณีสุ่มโดนหัวข้อที่ไม่ได้ระบุเจาะจง
