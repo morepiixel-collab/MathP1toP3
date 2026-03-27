@@ -463,23 +463,56 @@ def generate_questions_logic(grade, main_t, sub_t, num_q, is_challenge=False):
             elif actual_sub_t == "การอ่านแผนภูมิรูปภาพ":
                 item = random.choice(list(FRUIT_EMOJIS.keys()))
                 emoji = FRUIT_EMOJIS[item]
-                pic_val = random.choice([2, 5]) if grade == "ป.2" else (random.choice([5, 10]) if grade == "ป.3" else 1)
+                
+                # 💡 เพิ่มความหลากหลายของตัวเลขให้ ป.3 (ป.1-ป.2 ใช้เลขพื้นฐาน)
+                if grade == "ป.3":
+                    pic_val = random.choice([3, 4, 5, 10, 12, 15, 20])
+                elif grade == "ป.2":
+                    pic_val = random.choice([2, 5])
+                else:
+                    pic_val = 1
+                    
                 q_type = random.choice(["single", "total", "diff"])
                 pic_html, days, counts = draw_complex_pictogram_html(item, emoji, pic_val)
                 
                 if q_type == "single":
                     ask_idx = random.randint(0, 2)
-                    ans = counts[ask_idx] * pic_val
+                    c = counts[ask_idx]
+                    ans = c * pic_val
                     q = pic_html + f"<br>จากแผนภูมิรูปภาพ ใน<b>วัน{days[ask_idx]}</b> ขาย{item}ได้กี่ผล?"
+                    
+                    # สร้าง string บวกกันแบบเห็นภาพ เช่น 🍎(5) + 🍎(5) + 🍎(5)
+                    add_str = " + ".join([f"{emoji}({pic_val})" for _ in range(c)])
+                    num_add_str = " + ".join([str(pic_val)] * c)
+                    
+                    sol = f"<span style='color: #2c3e50;'><b>วิธีทำอย่างละเอียด:</b><br>👉 ในวัน{days[ask_idx]} มีรูป {emoji} จำนวน <b>{c} รูป</b><br>👉 กำหนดให้ 1 รูป แทน {pic_val} ผล<br>👉 <b>วิธีคิดแบบบวก:</b> ให้นำตัวเลขมาบวกกันตามจำนวนรูป<br>&nbsp;&nbsp;&nbsp;&nbsp;{add_str}<br>&nbsp;&nbsp;&nbsp;&nbsp;= {num_add_str} = <b>{ans} ผล</b><br><br>👉 <b>วิธีคิดแบบคูณ (รวดเร็ว):</b> {c} รูป × {pic_val} = <b>{ans} ผล</b><br><b>ตอบ: {ans} ผล</b></span>"
+                    
                 elif q_type == "total":
-                    ans = sum(counts) * pic_val
+                    total_c = sum(counts)
+                    ans = total_c * pic_val
                     q = pic_html + f"<br>จากแผนภูมิรูปภาพ รวมทั้ง 3 วัน ขาย{item}ได้ทั้งหมดกี่ผล?"
+                    
+                    # โชว์การบวกทีละวัน
+                    day_add_strs = []
+                    for d, c in zip(days, counts):
+                        day_add_strs.append(f"วัน{d}: " + " + ".join([str(pic_val)] * c) + f" = {c * pic_val}")
+                    day_details = "<br>&nbsp;&nbsp;&nbsp;&nbsp;".join(day_add_strs)
+                    
+                    sol = f"<span style='color: #2c3e50;'><b>วิธีทำอย่างละเอียด:</b><br>👉 กำหนดให้ {emoji} 1 รูป แทน {pic_val} ผล<br>👉 <b>วิธีที่ 1 (คิดทีละวันแล้วนำมาบวกกัน):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;{day_details}<br>&nbsp;&nbsp;&nbsp;&nbsp;นำมาบวกรวมกัน: {' + '.join([str(c*pic_val) for c in counts])} = <b>{ans} ผล</b><br><br>👉 <b>วิธีที่ 2 (นับรูปทั้งหมดแล้วค่อยคูณ):</b><br>&nbsp;&nbsp;&nbsp;&nbsp;นับรูป {emoji} รวมทั้ง 3 วันได้ <b>{total_c} รูป</b><br>&nbsp;&nbsp;&nbsp;&nbsp;นำมาคูณ: {total_c} × {pic_val} = <b>{ans} ผล</b><br><b>ตอบ: {ans} ผล</b></span>"
+                    
                 else:
                     d1, d2 = random.sample([0, 1, 2], 2)
                     if counts[d1] < counts[d2]: d1, d2 = d2, d1 
-                    ans = (counts[d1] - counts[d2]) * pic_val
+                    diff_c = counts[d1] - counts[d2]
+                    ans = diff_c * pic_val
                     q = pic_html + f"<br>จากแผนภูมิรูปภาพ วัน{days[d1]} ขาย{item}ได้<b>มากกว่า</b>วัน{days[d2]} กี่ผล?"
-                sol = f"<span style='color: #2c3e50;'><b>ตอบ: {ans} ผล</b></span>"
+                    
+                    val1 = counts[d1] * pic_val
+                    val2 = counts[d2] * pic_val
+                    add1 = " + ".join([str(pic_val)] * counts[d1])
+                    add2 = " + ".join([str(pic_val)] * counts[d2])
+                    
+                    sol = f"<span style='color: #2c3e50;'><b>วิธีทำอย่างละเอียด:</b><br>👉 กำหนดให้ {emoji} 1 รูป แทน {pic_val} ผล<br>👉 หาจำนวนของแต่ละวันก่อน:<br>&nbsp;&nbsp;&nbsp;&nbsp;วัน{days[d1]}: {add1} = <b>{val1} ผล</b><br>&nbsp;&nbsp;&nbsp;&nbsp;วัน{days[d2]}: {add2} = <b>{val2} ผล</b><br>👉 นำมาลบกันเพื่อหาผลต่าง: {val1} - {val2} = <b>{ans} ผล</b><br><br>👉 <i>(<b>ทริคคิดลัดแบบคูณ:</b> สังเกตว่าวัน{days[d1]} มีรูปภาพมากกว่าวัน{days[d2]} อยู่ <b>{diff_c} รูป</b> ➔ นำ {diff_c} รูป × {pic_val} = <b>{ans} ผล</b>)</i><br><b>ตอบ: {ans} ผล</b></span>"
 
             # ================= หมวดจำนวน การบวก ลบ คูณ หาร (ป.1 - ป.3) =================
             elif actual_sub_t in ["การนับทีละ 1 และ 10", "การนับทีละ 2 ทีละ 5 ทีละ 10"]:
