@@ -570,7 +570,7 @@ def generate_questions_logic(grade, main_t, sub_t, num_q, is_challenge=False):
                 sol = f"<span style='color:#2c3e50;'>{table_key}<br><b>ตอบ: {quotient:,}</b></span>"
 
 
-elif actual_sub_t == "การอ่านและเขียนเศษส่วน":
+            elif actual_sub_t == "การอ่านและเขียนเศษส่วน":
                 d = random.randint(3, 10)
                 n = random.randint(1, d-1)
                 
