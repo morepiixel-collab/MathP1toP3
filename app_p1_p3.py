@@ -569,6 +569,39 @@ def generate_questions_logic(grade, main_t, sub_t, num_q, is_challenge=False):
                     
                 sol = f"<span style='color:#2c3e50;'>{table_key}<br><b>ตอบ: {quotient:,}</b></span>"
 
+
+elif actual_sub_t == "การอ่านและเขียนเศษส่วน":
+                d = random.randint(3, 10)
+                n = random.randint(1, d-1)
+                
+                # 🎨 โค้ดวาดกราฟิกแท่งเศษส่วนแรเงา (SVG)
+                svg_w = 240
+                svg_h = 40
+                slice_w = svg_w / d
+                svg = f'<div style="text-align:center; margin: 15px 0;"><svg width="{svg_w}" height="{svg_h}" style="border: 2px solid #2c3e50;">'
+                for j in range(d):
+                    fill_color = "#3498db" if j < n else "#ffffff"
+                    svg += f'<rect x="{j*slice_w}" y="0" width="{slice_w}" height="{svg_h}" fill="{fill_color}" stroke="#2c3e50" stroke-width="2"/>'
+                svg += '</svg></div>'
+                
+                q = f"จากรูปภาพที่กำหนดให้ ส่วนที่แรเงาเขียนแสดงเป็นเศษส่วนได้อย่างไร?<br>{svg}"
+                sol = f"<span style='color:#2c3e50;'><b>วิธีทำอย่างละเอียด:</b><br>👉 รูปนี้ถูกแบ่งออกเป็น <b>{d}</b> ส่วนเท่าๆ กัน (ตัวส่วน)<br>👉 มีส่วนที่แรเงาสีฟ้าอยู่ <b>{n}</b> ส่วน (ตัวเศษ)<br><b>ตอบ: เศษ {n} ส่วน {d}</b> &nbsp;({f_html(n, d)})</span>"
+            
+            elif actual_sub_t == "การบวกลบเศษส่วน (ตัวส่วนเท่ากัน)":
+                d = random.randint(4, 12)
+                op = random.choice(["+", "-"])
+                if op == "+": 
+                    n1 = random.randint(1, d//2)
+                    n2 = random.randint(1, d//2)
+                else: 
+                    n1 = random.randint(d//2, d-1)
+                    n2 = random.randint(1, n1 - 1)
+                    
+                ans_n = n1 + n2 if op == "+" else n1 - n2
+                
+                q = f"จงหาผลลัพธ์ของ <b>{f_html(n1, d)} {op} {f_html(n2, d)}</b>"
+                sol = f"<span style='color:#2c3e50;'><b>วิธีทำอย่างละเอียด:</b><br>👉 การบวกลบเศษส่วนที่ตัวส่วนเท่ากัน ให้ดึงตัวส่วนมาเหมือนเดิม แล้วนำ 'ตัวเศษ' มา {op} กันได้เลย<br>👉 ({n1} {op} {n2}) / {d} = <b>{ans_n}/{d}</b><br><b>ตอบ: {f_html(ans_n, d)}</b></span>"
+            
             else:
                 # ป้องกัน Error กรณีสุ่มโดนหัวข้อที่ไม่ได้ระบุเจาะจง
                 q = f"📝 แบบฝึกหัดทบทวน: <b>{actual_sub_t}</b><br><span style='color:#7f8c8d;'>(ส่วนนี้เป็นพื้นที่สำหรับให้นักเรียนได้แสดงวิธีทำตามที่เรียนมาในห้องเรียน)</span>"
