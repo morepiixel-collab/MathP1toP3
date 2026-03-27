@@ -627,13 +627,21 @@ def create_page(grade, sub_t, questions, is_key=False, q_margin="20px", ws_heigh
     
     for i, item in enumerate(questions, 1):
         html += f'<div class="q-box"><b>ข้อที่ {i}.</b> '
+        
+        # 💡 เช็คซ่อนกรอบเส้นประ (ครอบคลุมถึงโหมดสุ่มทุกเรื่อง)
+        hide_ws = False
+        if "(แบบตั้งหลัก)" in sub_t or "หารยาว" in sub_t or "การหารพื้นฐาน" in sub_t:
+            hide_ws = True
+        elif any(keyword in item["question"] for keyword in ["จงหาผลบวกของ", "จงหาผลลบของ", "จงหาผลคูณของ", "วิธีหารยาว", "แบบตั้งหารยาว"]):
+            hide_ws = True
+            
         if is_key:
-            if "(แบบตั้งหลัก)" in sub_t or "หารยาว" in sub_t or "การหารพื้นฐาน" in sub_t: 
+            if hide_ws: 
                 html += f'{item["solution"]}'
             else: 
                 html += f'{item["question"]}<div class="sol-text">{item["solution"]}</div>'
         else:
-            if "(แบบตั้งหลัก)" in sub_t or "หารยาว" in sub_t or "การหารพื้นฐาน" in sub_t:
+            if hide_ws:
                 html += f'{item["question"]}<div class="ans-line">ตอบ: </div>'
             else:
                 html += f'{item["question"]}<div class="workspace">พื้นที่สำหรับทดเลขและแสดงวิธีทำ...</div><div class="ans-line">ตอบ: </div>'
